@@ -1,6 +1,7 @@
 body {
-    font-family: Arial, sans-serif;
-    font-weight: normal;
+    font-family: "Titillium Web", sans-serif;
+    font-weight: 400;
+    font-style: normal;
     background-color: #353535;
     text-align: center;
     color: #ccc;
@@ -46,10 +47,15 @@ input[type=range] {
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
+    font-family: "Titillium Web", sans-serif;
 }
 
 #feedback {
     margin-top: 20px;
     font-size: 18px;
     font-weight: bold;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 300;
 }
