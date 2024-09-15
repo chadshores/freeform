@@ -1,14 +1,16 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    font-weight: normal;
+    background-color: #353535;
     text-align: center;
+    color: #ccc;
 }
 
 .container {
     max-width: 600px;
     margin: 50px auto;
     padding: 20px;
-    background-color: #fff;
+    background-color: #222;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -17,6 +19,7 @@ body {
     display: flex;
     justify-content: space-around;
     margin-bottom: 20px;
+    flex-wrap: wrap;
 }
 
 .color-box {
@@ -24,6 +27,7 @@ body {
     height: 150px;
     border: 2px solid #333;
     border-radius: 4px;
+    margin-bottom: 20px;
 }
 
 .sliders {
