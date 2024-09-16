@@ -37,12 +37,31 @@ function calculateDistance(c1, c2) {
     );
 }
 
+// Function to handle the scoring based on similarity
+function calculateScore(similarity) {
+    if (similarity > 90) {
+        return 10;
+    } else if (similarity > 75) {
+        return 7;
+    } else if (similarity > 50) {
+        return 5;
+    } else if (similarity > 25) {
+        return 3;
+    } else {
+        return 0; // 0 points for very low similarity
+    }
+}
+
 // Initialize variables
 let targetColor = { r: 0, g: 0, b: 0 };
 let playerColor = { r: 0, g: 0, b: 0 };
+let currentRound = 1;
+let score = 0;
+const maxRounds = 5;
 
-// Set the initial target color
+// Set the initial target color and update player's color display
 setTargetColor();
+updatePlayerColor();
 
 // Add event listeners to sliders
 document.getElementById('red').addEventListener('input', updatePlayerColor);
@@ -52,15 +71,64 @@ document.getElementById('blue').addEventListener('input', updatePlayerColor);
 // Handle submit button click
 document.getElementById('submit-btn').addEventListener('click', () => {
     const distance = calculateDistance(targetColor, playerColor);
-    const feedback = document.getElementById('feedback');
-
-    // The maximum possible distance is sqrt(3*(255^2)) ≈ 441.67
     const maxDistance = Math.sqrt(3 * Math.pow(255, 2));
     const similarity = ((maxDistance - distance) / maxDistance) * 100;
+    const feedback = document.getElementById('feedback');
 
-    feedback.textContent = `Your similarity: ${similarity.toFixed(2)}%`;
+    const roundScore = calculateScore(similarity);
+    score += roundScore;
 
-    // Optionally, set a new target color after submission
-    setTargetColor();
+    feedback.textContent = `Your similarity: ${similarity.toFixed(2)}% - You earned ${roundScore} points!`;
+
+    // Update the score and round number display
+    document.getElementById('current-score').textContent = score;
+
+    if (currentRound < maxRounds) {
+        document.getElementById('next-swatch-btn').style.display = 'block';
+    } else {
+        feedback.textContent += ` Game Over! Your final score is ${score} points.`;
+        document.getElementById('submit-btn').disabled = true;
+        document.getElementById('new-game-btn').style.display = 'block';
+    }
+});
+
+// Handle next swatch button click
+document.getElementById('next-swatch-btn').addEventListener('click', () => {
+    currentRound++;
+    document.getElementById('current-round').textContent = currentRound;
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('next-swatch-btn').style.display = 'none';
+
+    // Reset sliders to 0
+    document.getElementById('red').value = 0;
+    document.getElementById('green').value = 0;
+    document.getElementById('blue').value = 0;
+
+    // Update player's color display to match the reset sliders
     updatePlayerColor();
+
+    // Set a new target color
+    setTargetColor();
+});
+
+// Handle new game button click
+document.getElementById('new-game-btn').addEventListener('click', () => {
+    currentRound = 1;
+    score = 0;
+    document.getElementById('current-round').textContent = currentRound;
+    document.getElementById('current-score').textContent = score;
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('new-game-btn').style.display = 'none';
+    document.getElementById('feedback').textContent = '';
+
+    // Reset sliders to 0
+    document.getElementById('red').value = 0;
+    document.getElementById('green').value = 0;
+    document.getElementById('blue').value = 0;
+
+    // Update player's color display to match the reset sliders
+    updatePlayerColor();
+
+    // Set the initial target color
+    setTargetColor();
 });
