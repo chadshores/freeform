@@ -59,6 +59,10 @@ let currentRound = 1;
 let score = 0;
 const maxRounds = 5;
 
+// Arrays to store color data for each round
+const targetColors = [];
+const playerColors = [];
+
 // Set the initial target color and update player's color display
 setTargetColor();
 updatePlayerColor();
@@ -80,15 +84,22 @@ document.getElementById('submit-btn').addEventListener('click', () => {
 
     feedback.textContent = `Your similarity: ${similarity.toFixed(2)}% - You earned ${roundScore} points!`;
 
+    // Save the colors for this round
+    targetColors.push({ ...targetColor });
+    playerColors.push({ ...playerColor });
+
     // Update the score and round number display
     document.getElementById('current-score').textContent = score;
 
-    if (currentRound < maxRounds) {
-        document.getElementById('next-swatch-btn').style.display = 'block';
-    } else {
+    // Hide the Submit button and show the Next Swatch button
+    document.getElementById('submit-btn').style.display = 'none';
+    document.getElementById('next-swatch-btn').style.display = 'block';
+
+    if (currentRound >= maxRounds) {
         feedback.textContent += ` Game Over! Your final score is ${score} points.`;
-        document.getElementById('submit-btn').disabled = true;
+        document.getElementById('next-swatch-btn').style.display = 'none';
         document.getElementById('new-game-btn').style.display = 'block';
+        displaySummary();
     }
 });
 
@@ -96,8 +107,6 @@ document.getElementById('submit-btn').addEventListener('click', () => {
 document.getElementById('next-swatch-btn').addEventListener('click', () => {
     currentRound++;
     document.getElementById('current-round').textContent = currentRound;
-    document.getElementById('submit-btn').disabled = false;
-    document.getElementById('next-swatch-btn').style.display = 'none';
 
     // Reset sliders to 0
     document.getElementById('red').value = 0;
@@ -109,15 +118,23 @@ document.getElementById('next-swatch-btn').addEventListener('click', () => {
 
     // Set a new target color
     setTargetColor();
+
+    // Hide the Next Swatch button and show the Submit button
+    document.getElementById('next-swatch-btn').style.display = 'none';
+    document.getElementById('submit-btn').style.display = 'block';
 });
 
 // Handle new game button click
 document.getElementById('new-game-btn').addEventListener('click', () => {
     currentRound = 1;
     score = 0;
+    targetColors.length = 0; // Reset the logs
+    playerColors.length = 0; // Reset the logs
     document.getElementById('current-round').textContent = currentRound;
     document.getElementById('current-score').textContent = score;
     document.getElementById('submit-btn').disabled = false;
+    document.getElementById('submit-btn').style.display = 'block';
+    document.getElementById('next-swatch-btn').style.display = 'none';
     document.getElementById('new-game-btn').style.display = 'none';
     document.getElementById('feedback').textContent = '';
 
@@ -132,3 +149,73 @@ document.getElementById('new-game-btn').addEventListener('click', () => {
     // Set the initial target color
     setTargetColor();
 });
+
+// Function to display the summary of all rounds
+// Function to display the summary of all rounds
+function displaySummary() {
+    // Get the container element where the game is located
+    const container = document.querySelector('.container');
+
+    // Clear the container's existing content
+    container.innerHTML = '';
+
+    // Create a summary element
+    const summaryDiv = document.createElement('div');
+    summaryDiv.innerHTML = '<h3>Game Summary</h3>';
+
+    // Populate the summary with round information
+    for (let i = 0; i < maxRounds; i++) {
+        const roundDiv = document.createElement('div');
+        roundDiv.innerHTML = `
+            <p>Round ${i + 1}:</p>
+            <p>Target Color: <span style="background-color: rgb(${targetColors[i].r}, ${targetColors[i].g}, ${targetColors[i].b}); display: inline-block; width: 50px; height: 20px;"></span> rgb(${targetColors[i].r}, ${targetColors[i].g}, ${targetColors[i].b})</p>
+            <p>Your Color: <span style="background-color: rgb(${playerColors[i].r}, ${playerColors[i].g}, ${playerColors[i].b}); display: inline-block; width: 50px; height: 20px;"></span> rgb(${playerColors[i].r}, ${playerColors[i].g}, ${playerColors[i].b})</p>
+        `;
+        summaryDiv.appendChild(roundDiv);
+    }
+
+    // Add the summary to the container
+    container.appendChild(summaryDiv);
+
+    // Optionally, add a "Restart Game" button
+    const restartButton = document.createElement('button');
+    restartButton.textContent = 'Restart Game';
+    restartButton.style.marginTop = '20px';
+    restartButton.style.padding = '10px 20px';
+    restartButton.style.fontSize = '16px';
+    restartButton.style.cursor = 'pointer';
+    restartButton.style.fontFamily = '"Titillium Web", sans-serif';
+    restartButton.addEventListener('click', () => {
+        // Reset the game when clicked
+        currentRound = 1;
+        score = 0;
+        targetColors.length = 0; // Reset the logs
+        playerColors.length = 0; // Reset the logs
+        container.innerHTML = originalContent; // Restore the original game HTML
+        document.getElementById('current-round').textContent = currentRound;
+        document.getElementById('current-score').textContent = score;
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('submit-btn').style.display = 'block';
+        document.getElementById('next-swatch-btn').style.display = 'none';
+        document.getElementById('new-game-btn').style.display = 'none';
+        document.getElementById('feedback').textContent = '';
+
+        // Reset sliders to 0
+        document.getElementById('red').value = 0;
+        document.getElementById('green').value = 0;
+        document.getElementById('blue').value = 0;
+
+        // Update player's color display to match the reset sliders
+        updatePlayerColor();
+
+        // Set the initial target color
+        setTargetColor();
+    });
+
+    summaryDiv.appendChild(restartButton);
+}
+
+// Capture the original content of the container
+const container = document.querySelector('.container');
+const originalContent = container.innerHTML;
+
